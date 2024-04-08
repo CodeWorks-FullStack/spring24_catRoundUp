@@ -12,6 +12,7 @@ export class CatsController extends BaseController {
     this.router.get('/test', this.testCats)
     this.router.get('', this.getCats)
     this.router.post('', this.createCat)
+    this.router.delete('/:catId', this.adoptCat) // the : creates a parameter. and a value can be passes in on the request
   }
 
   // NOTE each express "door" has available to it 3 parameters, all regarding, the different "hallways" or "pipelines" of each request
@@ -44,8 +45,18 @@ export class CatsController extends BaseController {
     try {
       // debugger does not work, but we can use "breakpoints", click on the left side of a numbered line, to include one. then respin, and try to run that code.
       const catData = request.body
-      await catsService.createCat(catData)
-      response.send(catData)
+      const cat = await catsService.createCat(catData)
+      response.send(cat)
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async adoptCat(request, response, next) {
+    try {
+      const catId = request.params.catId
+      await catsService.adoptCat(catId)
+      response.send("Cat was adopted")
     } catch (error) {
       next(error)
     }
